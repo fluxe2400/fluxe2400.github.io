@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>fluxe — админ</title>
 <meta name="theme-color" content="#07140e">
 <style>
@@ -14,6 +14,7 @@
       radial-gradient(1200px 800px at 10% -10%, #0b2a1c 0%, var(--bg) 40%),
       radial-gradient(1000px 700px at 110% 10%, #0c3a25 0%, var(--bg) 30%),
       var(--bg);
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
   #bg-snow{ position:fixed; inset:0; width:100vw; height:100vh; z-index:0; pointer-events:none; display:block; }
 
@@ -23,29 +24,28 @@
   h2{ margin:14px 0 10px; font-size:18px; color:#bfffe1; }
   label{ display:block; margin-bottom:6px; color:#cfeede; font-size:14px; }
   input[type="text"], input[type="password"]{
-    width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,255,136,.2); background:#0f2219; color:#eaf9f1; outline:none;
+    width:100%; padding:12px 12px; border-radius:10px; border:1px solid rgba(0,255,136,.2); background:#0f2219; color:#eaf9f1; outline:none; font-size:16px;
   }
   select{
-    width:180px; padding:8px; border-radius:10px; border:1px solid rgba(0,255,136,.3);
-    background:#0f2219; color:#eaf9f1; outline:none; appearance:auto;
+    width:180px; padding:10px; border-radius:10px; border:1px solid rgba(0,255,136,.3);
+    background:#0f2219; color:#eaf9f1; outline:none; appearance:auto; font-size:16px;
   }
   select option{ background:#0f2219; color:#eaf9f1; }
-  .btn{ display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 14px; border-radius:10px; background: linear-gradient(180deg, rgba(0,255,136,.95), rgba(0,230,120,.9)); color:#042d16; font-weight:800; border:none; cursor:pointer; }
+  .btn{ display:inline-flex; align-items:center; gap:8px; height:44px; padding:0 14px; border-radius:10px; background: linear-gradient(180deg, rgba(0,255,136,.95), rgba(0,230,120,.9)); color:#042d16; font-weight:800; border:none; cursor:pointer; touch-action: manipulation; font-size:16px; }
   .btn.secondary{ background: transparent; color:#bfffe1; border:1px solid rgba(0,255,136,.25); }
 
   .row{ display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:end; }
-  #search{ width:min(320px, 100%); } /* короче первая строка поиска */
+  #search{ width:min(320px, 100%); }
 
   .list{ display:grid; gap:10px; }
   .item{ display:grid; gap:8px; padding:12px; border-radius:12px; border:1px solid rgba(0,255,136,.18); background: rgba(5,18,12,.6); }
   .item .meta{ display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-size:13px; color:#cfeede; }
   .actions{ display:flex; gap:8px; flex-wrap:wrap; }
   .status{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,255,136,.25); color:#bfffe1; background: rgba(0,255,136,.08); }
-  .muted{ color:#8acfb1; font-size:13px; }
   .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:12px; }
   .right{ display:flex; align-items:center; gap:10px; }
   .avatar{
-    width:40px; height:40px; border-radius:50%; overflow:hidden; border:1px solid rgba(0,255,136,.3);
+    width:44px; height:44px; border-radius:50%; overflow:hidden; border:1px solid rgba(0,255,136,.3);
     box-shadow: 0 0 10px rgba(0,255,136,.3); background: rgba(0,255,136,.1);
   }
   .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -53,16 +53,14 @@
   .reveal{ opacity:0; transform: translateY(10px); transition: opacity .5s ease, transform .5s ease; }
   .reveal.in{ opacity:1; transform:none; }
 
-  /* Табы */
-  .tabs{ display:flex; gap:8px; margin-bottom:16px; }
+  .tabs{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
   .tab{ padding:8px 12px; border-radius:10px; border:1px solid rgba(0,255,136,.25); background: rgba(0,255,136,.08); color:#bfffe1; cursor:pointer; font-weight:700; }
-  .tab.active{ background: linear-gradient(180deg, rgba(0,255,136,.2), rgba(0,255,136,.12)); border-color: rgba(0,255,136,.45); }
 
-  @media (max-width:640px){
-    .row{ grid-template-columns:1fr }
-    .item .meta{ grid-template-columns:1fr }
+  @media (max-width:768px){
+    .row{ grid-template-columns:1fr; gap:12px }
     select{ width:100% }
-    #search{ width:100% }
+    .btn{ width:100% }
+    .item .meta{ grid-template-columns:1fr }
   }
 </style>
 </head>
@@ -82,19 +80,17 @@
       </div>
     </div>
     <label for="login">Логин</label>
-    <input type="text" id="login" placeholder="support_pelemeuu">
+    <input type="text" id="login" placeholder="Логин">
     <label for="pass" style="margin-top:10px;">Пароль</label>
     <input type="password" id="pass" placeholder="Пароль">
-    <div style="margin-top:12px; display:flex; gap:8px;">
+    <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
       <button class="btn" id="doLogin">Войти</button>
-      <span class="muted">Логин: support_pelemeuu</span>
     </div>
   </div>
 
-  <!-- Табы после входа -->
   <div class="box hidden reveal" id="tabsBox">
     <div class="tabs">
-      <button class="tab active" id="tabApps">Заявки</button>
+      <button class="tab" id="tabApps">Заявки</button>
       <button class="tab" id="tabHistory">История</button>
     </div>
   </div>
@@ -138,8 +134,7 @@
     <div class="topbar">
       <h1>История действий</h1>
       <div class="right">
-        <input type="text" id="histSearch" placeholder="Поиск в истории" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(0,255,136,.2); background:#0f2219; color:#eaf9f1;">
-        <!-- Кнопка очистки истории удалена -->
+        <input type="text" id="histSearch" placeholder="Поиск в истории" style="padding:10px 12px; border-radius:10px; border:1px solid rgba(0,255,136,.2); background:#0f2219; color:#eaf9f1; font-size:16px;">
       </div>
     </div>
     <div class="list" id="histList"></div>
@@ -148,18 +143,19 @@
 </div>
 
 <script>
-  // Анимации появления
+  // Reveal
   const animated = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries, obs) => {
     entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
   }, { threshold: .1 }); animated.forEach(el => io.observe(el));
 
-  // Снег (фон)
+  // Снег с мобильной плотностью
   (function snow(){
     const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(prefersReduce) return;
     const c = document.getElementById('bg-snow');
     const ctx = c.getContext('2d'); let flakes=[], raf=null;
+    function densityFactor(){ return window.matchMedia('(max-width: 768px)').matches ? 0.00007 : 0.00012; }
     function setCanvasSize(){
       const dpr = Math.max(1, window.devicePixelRatio || 1);
       const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -171,7 +167,7 @@
     }
     function makeFlake(w,h){ return { x:Math.random()*w, y:Math.random()*h, r:1+Math.random()*2.2, s:.4+Math.random()*1.2, d:Math.random()*1.5 }; }
     function adjustFlakes(w,h){
-      const target = Math.floor(w*h*0.00012);
+      const target = Math.floor(w*h*densityFactor());
       if(flakes.length===0){ flakes = new Array(target).fill(0).map(()=>makeFlake(w,h)); return; }
       if(flakes.length<target){ for(let i=flakes.length;i<target;i++) flakes.push(makeFlake(w,h)); }
       else if(flakes.length>target){ flakes.length = target; }
@@ -189,12 +185,12 @@
     }
     function start(){ if(raf) return; setCanvasSize(); raf=requestAnimationFrame(step); }
     function stop(){ if(raf){ cancelAnimationFrame(raf); raf=null; } }
-    window.addEventListener('resize', setCanvasSize);
+    window.addEventListener('resize', setCanvasSize, {passive:true});
     document.addEventListener('visibilitychange', ()=>{ if(document.hidden) stop(); else start(); });
     start();
   })();
 
-  // Авторизация
+  // Авторизация (демо)
   const CRED = {
     login: 'support_pelemeuu',
     pass: '9358gj37&HIUYegs8u84hgY&Hugr87w4hudgj%UgnjdshgYUghsj4njefguydhGUSRIHGUSDH47wyudgf'
@@ -251,7 +247,7 @@
   changeAvatar2.addEventListener('click', ()=>chooseAvatar(avatarInput2));
   loadAvatar();
 
-  // База заявок
+  // БД заявок
   const listEl = document.getElementById('list');
   const emptyEl = document.getElementById('empty');
   const clearBtn = document.getElementById('clearAll');
@@ -367,8 +363,8 @@
       item.querySelector('[data-act="approve"]').addEventListener('click', () => updateStatus(a.id,'approved'));
       item.querySelector('[data-act="reject"]').addEventListener('click', () => {
         const reason = prompt('Укажите причину отклонения:','');
-        if(reason===null) return; // отмена
-        updateStatus(a.id,'rejected', reason.trim());
+        if(reason===null) return;
+        updateStatus(a.id,'rejected', (reason||'').trim());
       });
       item.querySelector('[data-act="remove"]').addEventListener('click', () => {
         if(confirm('Удалить заявку?')) removeApp(a.id);
@@ -379,7 +375,7 @@
 
   function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-  // Логирование отправленных заявок из submit.html
+  // submitted-лог
   function syncSubmittedLogs(){
     const apps = getDb();
     const known = new Set((JSON.parse(localStorage.getItem('fluxeKnownIds')) || []));
@@ -421,6 +417,7 @@
       syncSubmittedLogs();
       render();
       renderHistory();
+      tabApps.classList.add('active'); tabHistory.classList.remove('active');
     }else{
       alert('Неверный логин или пароль');
     }
@@ -442,6 +439,7 @@
     syncSubmittedLogs();
     render();
     renderHistory();
+    tabApps.classList.add('active'); tabHistory.classList.remove('active');
   }
 </script>
 </body>
