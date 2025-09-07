@@ -2,11 +2,19 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>fluxe — предложить игру/программу</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>fluxe — игры и программы</title>
 <meta name="theme-color" content="#07140e">
 <style>
-  :root{ --bg:#07140e; --green:#00ff88; --text:#eaf9f1; --muted:#b6e3c8; }
+  :root{
+    --bg:#07140e;
+    --green:#00ff88;
+    --text:#eaf9f1;
+    --muted:#b6e3c8;
+    --accent:#7afdd0;
+  }
+
+  /* БАЗА */
   body{
     margin:0; color:var(--text);
     font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -14,108 +22,351 @@
       radial-gradient(1200px 800px at 10% -10%, #0b2a1c 0%, var(--bg) 40%),
       radial-gradient(1000px 700px at 110% 10%, #0c3a25 0%, var(--bg) 30%),
       var(--bg);
+    -webkit-tap-highlight-color: transparent;
   }
 
-  #bg-snow{ position:fixed; inset:0; width:100vw; height:100vh; z-index:0; pointer-events:none; display:block; }
+  /* КОСМОС */
+  #bg-space{
+    position:fixed; inset:0; width:100vw; height:100vh; z-index:0; pointer-events:none; display:block;
+  }
 
-  .wrap{ position:relative; z-index:1; max-width:720px; margin:40px auto; padding:0 16px; }
-  .box{ background: rgba(5,18,12,.8); border:1px solid rgba(0,255,136,.25); border-radius:16px; padding:18px; box-shadow:0 8px 24px rgba(0,0,0,.35); }
+  /* КАСТОМНЫЙ КУРСОР (только для устройств с pointer:fine) */
+  @media (pointer: fine){
+    html, body{ cursor:none; }
+    #cursor{
+      position:fixed; left:0; top:0; width:18px; height:18px; border-radius:50%;
+      background:rgba(255,255,255,.6); box-shadow:0 0 12px rgba(255,255,255,.35);
+      transform: translate(-50%,-50%); pointer-events:none; z-index:5;
+      transition: width .12s ease, height .12s ease, background .12s ease, box-shadow .12s ease;
+      mix-blend-mode:screen;
+    }
+    a, button, .btn, .icon-btn{ cursor:none; }
+    .cursor-big{ width:26px!important; height:26px!important; background:rgba(255,255,255,.5)!important; box-shadow:0 0 16px rgba(255,255,255,.45)!important; }
+  }
 
-  /* Обновлённый дизайн логотипа fluxe */
-  .header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  /* ЛЭЙАУТ */
+  .fluxe-site{ position:relative; min-height:100vh; overflow:hidden; z-index:1; }
+
+  .header{ position:sticky; top:0; z-index:3; padding:22px;
+    backdrop-filter:blur(10px);
+    background: linear-gradient(180deg, rgba(7,20,14,.7), rgba(7,20,14,.3) 60%, transparent);
+    border-bottom:1px solid rgba(0,255,136,.15);
+  }
+  .header .container{ max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 6px; }
+
   .logo{
-    font-weight:900; font-size:24px; letter-spacing:.6px; line-height:1;
+    font-weight:900; font-size:26px; letter-spacing:.6px; line-height:1;
     background: linear-gradient(90deg, #eafff7 0%, #6bffb5 30%, #00ff88 50%, #9fffd8 70%, #eafff7 100%);
-    background-size:200% auto;
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    filter: drop-shadow(0 0 10px rgba(0,255,136,.35));
-    animation: logoGlow 8s ease-in-out infinite;
+    background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter: drop-shadow(0 0 10px rgba(0,255,136,.35)); animation: logoGlow 8s ease-in-out infinite;
     user-select:none;
   }
-  @keyframes logoGlow{
-    0%,100%{ background-position:0% 50%; filter: drop-shadow(0 0 8px rgba(0,255,136,.3)); }
-    50%{ background-position:100% 50%; filter: drop-shadow(0 0 14px rgba(0,255,136,.6)); }
+  @keyframes logoGlow{ 0%,100%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } }
+
+  .actions{ display:flex; align-items:center; gap:10px; }
+  .icon-btn{
+    width:44px; height:44px; border-radius:50%;
+    background: rgba(0,255,136,.12); border:1px solid rgba(0,255,136,.25);
+    box-shadow: 0 0 12px rgba(0,255,136,.35), 0 0 24px rgba(0,255,136,.15);
+    display:inline-flex; align-items:center; justify-content:center; color:var(--green);
+    transition: transform .18s ease, box-shadow .2s ease, filter .2s ease; text-decoration:none; cursor:pointer;
+    touch-action: manipulation;
+  }
+  .icon-btn:hover{ transform: scale(1.08); box-shadow:0 0 16px rgba(0,255,136,.8), 0 0 40px rgba(0,255,136,.35); }
+
+  .hero{ position:relative; z-index:1; max-width:1200px; margin:40px auto 10px; padding:32px 22px 0; text-align:left; }
+
+  /* НОВЫЙ ДИЗАЙН H1 */
+  .title{
+    font-size: clamp(30px, 5vw, 56px); font-weight:900; line-height:1.08; margin:0;
+    background: radial-gradient(120% 120% at 0% 50%, #eafff7 0%, #aaffdd 35%, #7afdd0 55%, #eafff7 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow: 0 0 18px rgba(122,253,208,.25);
+    letter-spacing:.3px; position:relative; padding-bottom:12px;
+  }
+  .title::after{
+    content:""; position:absolute; left:0; bottom:0; width:180px; height:3px;
+    background: linear-gradient(90deg, var(--accent), rgba(122,253,208,0));
+    border-radius:3px; filter: drop-shadow(0 0 8px rgba(122,253,208,.5));
   }
 
-  .icon-btn{ width:40px; height:40px; border-radius:50%; background: rgba(0,255,136,.12); border:1px solid rgba(0,255,136,.25); box-shadow: 0 0 12px rgba(0,255,136,.35), 0 0 24px rgba(0,255,136,.15); display:inline-flex; align-items:center; justify-content:center; color:var(--green); text-decoration:none; }
-
-  .title{ margin:0 0 14px; font-size:26px; font-weight:900; color:#bfffe1; text-shadow:0 0 12px rgba(0,255,136,.25); }
-  label{ display:block; margin:10px 0 6px; color:#cfeede; font-size:14px; }
-  input[type="text"], input[type="url"]{
-    width:100%; padding:12px 12px; border-radius:12px; border:1px solid rgba(0,255,136,.25);
-    background:rgba(0,255,136,.06); color:#eaf9f1; outline:none;
+  .section{ position:relative; z-index:1; max-width:1200px; margin:28px auto 8px; padding:0 22px; }
+  /* НОВЫЙ ДИЗАЙН ЗАГОЛОВКОВ РАЗДЕЛОВ */
+  .section-title{
+    display:inline-flex; align-items:center; gap:10px; margin:22px 0 10px;
+    font-size:20px; font-weight:800; letter-spacing:.45px; color:#dffdf0;
+    padding:8px 14px; border-radius:999px; border:1px solid rgba(122,253,208,.35);
+    background: linear-gradient(180deg, rgba(122,253,208,.15), rgba(122,253,208,.06));
+    box-shadow: inset 0 0 0 1px rgba(122,253,208,.12);
   }
-  .row{ display:grid; gap:10px; }
+  .section-title svg{ width:18px; height:18px; color:var(--accent); filter: drop-shadow(0 0 8px rgba(122,253,208,.4)); }
 
-  /* Капча */
-  .captcha{ display:grid; grid-template-columns: 1fr auto; align-items:end; gap:10px; margin-top:6px; }
-  .captcha-box{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; border:1px solid rgba(0,255,136,.25); background:rgba(0,255,136,.06); }
-  .captcha-q{ font-weight:800; color:#bfffe1; letter-spacing:.3px; }
-  .cap-field{ width:120px; }
-  .cap-refresh{ height:40px; border-radius:10px; padding:0 12px; border:1px solid rgba(0,255,136,.25); background:transparent; color:#bfffe1; cursor:pointer; }
+  .catalog{ position:relative; z-index:1; max-width:1200px; margin:12px auto 46px; padding:0 22px;
+    display:grid; grid-template-columns: repeat(12, 1fr); gap:18px;
+  }
+  .card{ grid-column: span 4; display:flex; flex-direction:column;
+    background: linear-gradient(180deg, rgba(5,18,12,.8), rgba(5,18,12,.6));
+    border:1px solid rgba(0,255,136,.18); border-radius:16px; overflow:hidden;
+    box-shadow:0 8px 24px rgba(0,0,0,.35), 0 0 0 1px rgba(0,255,136,.08) inset;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .card:hover{ transform: translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.5), 0 0 30px rgba(0,255,136,.15); border-color: rgba(0,255,136,.35); }
 
-  .actions{ display:flex; gap:8px; margin-top:14px; }
-  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; height:44px; padding:0 16px; border-radius:12px;
-    background: linear-gradient(180deg, rgba(0,255,136,.95), rgba(0,230,120,.9)); color:#042d16; font-weight:800; border:none; cursor:pointer; }
-  .btn.secondary{ background: transparent; color:#bfffe1; border:1px solid rgba(0,255,136,.25); }
-  .ok{ padding:12px; border-radius:12px; background:rgba(0,255,136,.12); border:1px solid rgba(0,255,136,.3); color:#bfffe1; margin-top:12px; }
+  .thumb{ position:relative; padding-top:58%; background-size:cover; background-position:center; filter:saturate(110%); }
+  .thumb::after{ content:""; position:absolute; inset:0; background: radial-gradient(60% 80% at 70% 10%, rgba(0,255,136,.18), transparent 60%); mix-blend-mode: screen; }
+  .thumb.placeholder{
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(135deg, rgba(0,255,136,.15), rgba(0,255,136,.05));
+  }
+  .thumb.placeholder::after{ display:none; }
+  .thumb.placeholder span{ font-weight:900; font-size: clamp(28px,5vw,42px); color:#cffff0; text-transform:uppercase; letter-spacing:.5px; }
 
-  .reveal{ opacity:0; transform: translateY(12px); transition: opacity .6s cubic-bezier(.2,.7,.2,1), transform .6s cubic-bezier(.2,.7,.2,1); }
-  .reveal.in{ opacity:1; transform:none; }
+  .card-body{ padding:16px; display:grid; gap:12px; }
+  .card-title{ font-size:20px; font-weight:800; margin:0; }
+  .meta{ display:flex; align-items:center; gap:8px; }
+  .badge{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-size:13px; font-weight:700; letter-spacing:.2px; background: rgba(0,255,136,.08); color:#bfffe1; border:1px solid rgba(0,255,136,.25); text-transform:uppercase; }
+  .badge.offline::before{ content:"•"; color:#ff6a6a; text-shadow: 0 0 8px rgba(255,90,90,.6); }
+
+  /* НОВЫЕ КНОПКИ */
+  .btn{
+    position:relative; overflow:hidden;
+    display:inline-flex; justify-content:center; align-items:center; gap:10px; height:48px; padding:0 20px; border-radius:12px;
+    color:#042d16; font-weight:900; letter-spacing:.3px; text-decoration:none; touch-action: manipulation;
+    border:1px solid rgba(255,255,255,.18);
+    background:
+      linear-gradient(180deg, rgba(170,255,221,.95), rgba(122,253,208,.9));
+    box-shadow:
+      0 0 0 2px rgba(122,253,208,.35) inset,
+      0 0 16px rgba(122,253,208,.6),
+      0 0 44px rgba(122,253,208,.25);
+    transition: transform .18s ease, box-shadow .2s ease, filter .2s ease;
+  }
+  .btn::before{
+    content:""; position:absolute; inset:-200% -20%; background: linear-gradient(90deg, rgba(255,255,255,.0) 10%, rgba(255,255,255,.35) 50%, rgba(255,255,255,0) 90%);
+    transform: translateX(-60%); transition: transform .8s ease;
+  }
+  .btn:hover{ transform: translateY(-1px) scale(1.03); filter: brightness(1.02); }
+  .btn:hover::before{ transform: translateX(60%); }
+  .btn:active{ transform: translateY(0) scale(0.995); }
+  .btn:focus{ outline:none; box-shadow: 0 0 0 3px rgba(122,253,208,.35), 0 0 0 6px rgba(122,253,208,.2), 0 0 22px rgba(122,253,208,.7); }
+
+  .footer{ position:relative; z-index:1; color:var(--muted); text-align:center; padding:24px; border-top:1px solid rgba(0,255,136,.12); background: linear-gradient(180deg, rgba(5,18,12,.3), transparent); }
+
+  .reveal{ opacity:0; transform: translateY(14px); transition: opacity .6s cubic-bezier(.2,.7,.2,1), transform .6s cubic-bezier(.2,.7,.2,1); will-change:opacity,transform; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* АДАПТИВ */
+  @media (max-width:768px){
+    .header{padding:18px}
+    .header .container{padding:0 10px}
+    .catalog{gap:16px}
+    .card{grid-column: span 12}
+    .btn{width:100%}
+  }
+  @media (max-width:640px){
+    .hero{padding:24px 16px 0}
+    .section{padding:0 16px}
+    .catalog{padding:0 16px; gap:14px}
+    .icon-btn{width:44px; height:44px}
+  }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
 </style>
 </head>
 <body>
-<canvas id="bg-snow" aria-hidden="true"></canvas>
+<canvas id="bg-space" aria-hidden="true"></canvas>
+<div id="cursor" aria-hidden="true"></div>
 
-<div class="wrap">
-  <div class="header reveal">
-    <div class="logo">fluxe</div>
-    <a class="icon-btn" href="index.html" aria-label="На главную">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-    </a>
-  </div>
-
-  <div class="box reveal">
-    <h1 class="title">Подача заявки</h1>
-    <form id="appForm" class="row" autocomplete="off" novalidate>
-      <div>
-        <label for="nick">Ваш ник</label>
-        <input type="text" id="nick" required placeholder="например, pelemeuu">
-      </div>
-      <div>
-        <label for="title">Название игры/программы</label>
-        <input type="text" id="title" required placeholder="например, Buckshot Roulette">
-      </div>
-      <div>
-        <label for="vt">Ссылка на VirusTotal</label>
-        <input type="url" id="vt" required placeholder="https://www.virustotal.com/..." inputmode="url">
-      </div>
-      <div>
-        <label for="link">Ссылка на скачивание</label>
-        <input type="url" id="link" required placeholder="https://..." inputmode="url">
-      </div>
-
-      <!-- Капча -->
-      <div>
-        <label>Подтвердите, что вы не робот</label>
-        <div class="captcha">
-          <div class="captcha-box">
-            <span class="captcha-q" id="capQ">2 + 3 = ?</span>
-            <input class="cap-field" type="text" id="capA" inputmode="numeric" placeholder="Ответ" required>
-          </div>
-          <button type="button" class="cap-refresh" id="capR">Обновить</button>
-        </div>
-      </div>
-
+<div class="fluxe-site" id="fluxe">
+  <header class="header reveal">
+    <div class="container">
+      <div class="logo">fluxe</div>
       <div class="actions">
-        <button class="btn" type="submit">Отправить</button>
-        <button class="btn secondary" type="reset" id="resetBtn">Сброс</button>
+        <a class="icon-btn" href="https://fluxe240.github.io/game" target="_blank" rel="noopener noreferrer" aria-label="Предложить игру или программу">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h9"/>
+            <path d="M16 3v6"/><path d="M13 6h6"/>
+          </svg>
+        </a>
       </div>
+    </div>
+  </header>
 
-      <!-- Убрано сообщение про LocalStorage и ID -->
-      <div id="result" class="ok" style="display:none;"></div>
-    </form>
+  <section class="hero">
+    <h1 class="title reveal">Скачивайте игры и программы в один клик</h1>
+  </section>
+
+  <!-- Игры -->
+  <div class="section">
+    <h2 class="section-title reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.64 5.35L20.7 8l-4.35 4.24L17.2 19 12 15.9 6.8 19l.85-6.76L3.3 8l6.06-.65L12 2z"/></svg>
+      Игры
+    </h2>
   </div>
+  <section class="catalog" aria-label="Список игр">
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://buckshotroulette.com//data/image/game/buckshot-roulette-feature-image.jpg');"></div>
+      <div class="card-body">
+        <h3 class="card-title">Buckshot Roulette</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/Xt5nAZwD#Ce9Q4PMAJ9ZwHImhzcW6sbP6ljY66CSdE6SBq_9z7U0" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://f4.bcbits.com/img/a0084845941_16.jpg');"></div>
+      <div class="card-body">
+        <h3 class="card-title">ULTRAKILL</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/XwBXQBzZ#T0mLOXEwsD-jkMeAmrOseM6uSABdOE8fDh8pTYhzLzQ" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://itorrents-igruha.org/uploads/posts/2023-01/1672795576_cover.jpg');"></div>
+      <div class="card-body">
+        <h3 class="card-title">Hotline Miami</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/LkQ0VDoD#2Af6pxZq4K6ADTrw_YhDHDhpl_Dvv44dfTCyvuLcGiM" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://i.playground.ru/e/HB-5Xo_DO35lX0_FVIlIHQ.jpeg?600-600');"></div>
+      <div class="card-body">
+        <h3 class="card-title">ленивая принцесса-монстр не хочет работать</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/e5hhgYzB#JaLJwF_EwO0xg6qljqPCKINXbwFgqIOA-GZDLmef07U" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://i.redd.it/zozlzva328291.jpg');"></div>
+      <div class="card-body">
+        <h3 class="card-title">Five nights at Floppa</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/ywATmbTB#qHoCjHIJwPwbLF5n_AQsELVG8YHk9_LfW49mH2a17Xs" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Порно игры (новый раздел) -->
+  <div class="section">
+    <h2 class="section-title reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      Порно игры
+    </h2>
+  </div>
+  <section class="catalog" aria-label="Список порно игр">
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://i.ytimg.com/vi/YOROzc-8Uqg/maxresdefault.jpg');"></div>
+      <div class="card-body">
+        <h3 class="card-title">Furry Hitler</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/L4YSRCDK#f2ulGEi7JEO6N6friM_t_XvyxgKDHBCXZSeRcwzY96M" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Читы -->
+  <div class="section">
+    <h2 class="section-title reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20l9-16H3l9 16z"/><path d="M12 8v4"/></svg>
+      Читы
+    </h2>
+  </div>
+  <section class="catalog" aria-label="Список читов">
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://rscripts.net/assets/executors/XenoLogo.webp');"></div>
+      <div class="card-body">
+        <h3 class="card-title">xeno</h3>
+        <div class="meta"><span class="badge">Для: Roblox</span></div>
+        <a class="btn" href="https://mega.nz/file/jg4m2BQb#sBgZ5Pgilrdtv1Pp2-uYAN_-OTLYN8W29pta9hpoQ8E" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://getsolara.dev/images/iconfull.png'); background-size:contain; background-color:rgba(0,255,136,.06);"></div>
+      <div class="card-body">
+        <h3 class="card-title">solara</h3>
+        <div class="meta"><span class="badge">Для: Roblox</span></div>
+        <a class="btn" href="https://mega.nz/file/TwARXBQL#n-Ht5S4lY6whFMz17sM8RhvaXuOAAKoB6Q60vthqSok" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://cdn4.telesco.pe/file/DGNmtilFqeS0gU9OGta0qPnOv4MgWavbi_Ermfgn8YoBmVXdxtJrAL695NCCIqx5BemV2yw1aMheU2lyhU64bPtKyWJJogtjGHwGj9_FcVda3n7oNhfRQ81r4-pu9vorcZNvbxyxvz6pEEoy4CqT29HjJhlFPmmzWmEGqvmVnZGIGGKNbM2GtIKmX-Eme5EJ4tqHFbXg0NW0zzLlMXMsMwdCQEYid9Qk9vVBsPiRDNQxONa8RTlcJEECuLmGoZ7N9OWaVXV-h3ZI5MZPSBFmVs1vQ_eXzubiarBWUcu8LPdrwzVJJijNnQREDeVOh4SdGv2CKSMJ7YHSFr7wons0iQ.jpg');"></div>
+      <div class="card-body">
+        <h3 class="card-title">sharkhack</h3>
+        <div class="meta"><span class="badge">Для: Counter-Strike 2</span></div>
+        <a class="btn" href="https://mega.nz/file/OhBRRSQR#DC9RjxDpa7fCKd27sFjLPfBBvl4q3rh6fajcwDH2ml4" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Программы -->
+  <div class="section">
+    <h2 class="section-title reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v4H9z"/><path d="M5 7h14v14H5z"/><path d="M9 15h6"/></svg>
+      Программы
+    </h2>
+  </div>
+  <section class="catalog" aria-label="Список программ">
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://play-lh.googleusercontent.com/MumkEpSL7dj16Rt_JfqgKPmMhaWlBhQN5HD2sxNpCgKhUEiIkfcktW_pllWM3wfKeQ=w240-h480-rw');"></div>
+      <div class="card-body">
+        <h3 class="card-title">Wallpaper Engine</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/D14CSDhZ#g5ypoUYXOwiFmptSbBBlwgAwsp0NG1sLuA3_ei7K-iU" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjW67tvI9LKr21QJeNObg14_cKP0T4cWzaTQ&s');"></div>
+      <div class="card-body">
+        <h3 class="card-title">Steam Tools</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/3tw32bCI#MnN0SPi9Egu0k25bBdIlCsSMK80RzP_AMNcqyKTfhFw" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://images.steamusercontent.com/ugc/27690528766895719/C9F2DBAF5000D1D391A110B374EFFBDA4B6C9099/?imw=200&imh=200&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true');"></div>
+      <div class="card-body">
+        <h3 class="card-title">Soundpad</h3>
+        <div class="meta"><span class="badge offline">Онлайн: нет</span></div>
+        <a class="btn" href="https://mega.nz/file/fsACCZDL#BXMbYeqoNDeY5iax5TkwVbcVIIWOM6qm5pWqTrbQSW8" target="_blank" rel="noopener nofollow">Скачать</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Ссылки -->
+  <div class="section">
+    <h2 class="section-title reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1"/><path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1"/></svg>
+      Ссылки
+    </h2>
+  </div>
+  <section class="catalog" aria-label="Полезные ссылки">
+    <article class="card reveal">
+      <div class="thumb" id="thumb-manilua"></div>
+      <div class="card-body">
+        <h3 class="card-title">manilua</h3>
+        <a class="btn" href="https://www.piracybound.com/manilua" target="_blank" rel="noopener noreferrer">Перейти</a>
+      </div>
+    </article>
+
+    <article class="card reveal">
+      <div class="thumb" style="background-image:url('https://steamdb.info/static/logos/512px.png'); background-size:contain; background-color:rgba(0,255,136,.06);"></div>
+      <div class="card-body">
+        <h3 class="card-title">Steam DB</h3>
+        <a class="btn" href="https://steamdb.info/" target="_blank" rel="noopener noreferrer">Перейти</a>
+      </div>
+    </article>
+  </section>
+
+  <footer class="footer reveal">
+    <small>by pelemeuu</small>
+  </footer>
 </div>
 
 <script>
@@ -123,106 +374,107 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reveal
   const animated = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('in'); obs.unobserve(entry.target); } });
-  }, { threshold: .1 });
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: .12, rootMargin: "0px 0px -8% 0px" });
   animated.forEach(el => io.observe(el));
+  setTimeout(() => document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('in')), 80);
 
-  // Снег (HiDPI, ресайз)
+  // Рандом для manilua
+  const m = document.getElementById('thumb-manilua');
+  if(m){
+    const r = Math.floor(Math.random()*1e7);
+    m.style.background = `url('https://picsum.photos/800/600?random=${r}') center/cover no-repeat`;
+    m.style.paddingTop = '58%';
+    m.classList.remove('placeholder');
+  }
+
+  // Кастомный курсор (менее плавный)
+  const hasFine = window.matchMedia('(pointer: fine)').matches;
+  if(hasFine){
+    const c = document.getElementById('cursor');
+    let x=window.innerWidth/2, y=window.innerHeight/2, tx=x, ty=y, raf=null;
+    const follow = 0.35; // было 0.18 — теперь меньше плавности (быстрее)
+    function loop(){
+      x += (tx - x) * follow;
+      y += (ty - y) * follow;
+      c.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%)`;
+      raf = requestAnimationFrame(loop);
+    }
+    window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, {passive:true});
+    document.addEventListener('mouseover', e => {
+      if(e.target.closest('a, button, .btn, .icon-btn')) c.classList.add('cursor-big'); else c.classList.remove('cursor-big');
+    });
+    loop();
+  }
+
+  // Листья вместо космоса (падающие листья с покачиванием)
   const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(!prefersReduce){
-    const c = document.getElementById('bg-snow');
-    const ctx = c.getContext('2d');
-    let flakes = [], raf=null;
+    const cv = document.getElementById('bg-space');
+    const ctx = cv.getContext('2d');
+    let leaves = [], raf=null;
 
-    function setCanvasSize(){
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-      const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      c.width = Math.floor(w*dpr); c.height = Math.floor(h*dpr);
-      c.style.width = w+'px'; c.style.height = h+'px';
+    function density(){ return window.matchMedia('(max-width:768px)').matches ? 0.00004 : 0.00008; } // Меньше density для листьев, чтобы не перегружать
+    function setSize(){
+      const dpr = Math.max(1, window.devicePixelRatio||1);
+      const w = Math.max(document.documentElement.clientWidth, window.innerWidth||0);
+      const h = Math.max(document.documentElement.clientHeight, window.innerHeight||0);
+      cv.width = Math.floor(w*dpr); cv.height = Math.floor(h*dpr);
+      cv.style.width = w+'px'; cv.style.height = h+'px';
       ctx.setTransform(1,0,0,1,0,0); ctx.scale(dpr,dpr);
-      adjustFlakes(w,h);
+      build(w,h);
     }
-
-    function makeFlake(w,h){ return { x:Math.random()*w, y:Math.random()*h, r:1+Math.random()*2.2, s:.4+Math.random()*1.2, d:Math.random()*1.5 }; }
-    function adjustFlakes(w,h){
-      const target = Math.floor(w*h*0.00012);
-      if(flakes.length===0){ flakes = new Array(target).fill(0).map(()=>makeFlake(w,h)); return; }
-      if(flakes.length<target){ for(let i=flakes.length;i<target;i++) flakes.push(makeFlake(w,h)); }
-      else if(flakes.length>target){ flakes.length = target; }
+    function build(w,h){
+      const n = Math.floor(w*h*density());
+      leaves = new Array(n).fill(0).map(()=>({
+        x: Math.random()*w,
+        y: Math.random()*h * -1, // Начинают сверху за экраном
+        size: Math.random()*8 + 4, // Размер листа
+        speedY: Math.random()*1.5 + 0.5, // Скорость падения
+        swaySpeed: Math.random()*0.5 + 0.2, // Скорость покачивания
+        phase: Math.random()*Math.PI*2,
+        hue: 120 + Math.random()*60, // Зелёные тона (от 120 до 180)
+        rotation: Math.random()*Math.PI*2 // Угол поворота
+      }));
     }
-
-    function step(){
-      const w = c.clientWidth, h = c.clientHeight;
+    function step(t){
+      const w=cv.clientWidth, h=cv.clientHeight;
       ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = 'rgba(255,255,255,.9)';
-      for(const f of flakes){
-        f.y += f.s; f.x += Math.sin((f.y+f.d)*0.01)*0.6;
-        if(f.y > h+5){ f.y = -10; f.x = Math.random()*w; }
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+      for(const leaf of leaves){
+        const time = (t||0)*0.001;
+
+        // Движение: падение вниз + покачивание в стороны
+        leaf.y += leaf.speedY;
+        leaf.x += Math.sin(time * leaf.swaySpeed + leaf.phase) * 0.5; // Покачивание
+
+        // Респавн, если вышел за низ экрана
+        if(leaf.y > h + leaf.size){
+          leaf.y = Math.random() * -leaf.size * 2;
+          leaf.x = Math.random() * w;
+          leaf.rotation = Math.random()*Math.PI*2;
+        }
+
+        // Рисование листа (простой эллипс с градиентом)
+        ctx.save();
+        ctx.translate(leaf.x, leaf.y);
+        ctx.rotate(leaf.rotation + Math.sin(time * leaf.swaySpeed) * 0.1); // Лёгкий поворот
+        const grad = ctx.createLinearGradient(0, -leaf.size/2, 0, leaf.size/2);
+        grad.addColorStop(0, `hsla(${leaf.hue}, 80%, 50%, 0.3)`);
+        grad.addColorStop(1, `hsla(${leaf.hue + 20}, 70%, 40%, 0.2)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, leaf.size/2, leaf.size, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
       }
       raf = requestAnimationFrame(step);
     }
-
-    function start(){ if(raf) return; setCanvasSize(); raf = requestAnimationFrame(step); }
-    function stop(){ if(raf){ cancelAnimationFrame(raf); raf = null; } }
-    window.addEventListener('resize', setCanvasSize);
-    document.addEventListener('visibilitychange', () => { if(document.hidden) stop(); else start(); });
+    function start(){ if(raf) return; setSize(); raf = requestAnimationFrame(step); }
+    function stop(){ if(raf){ cancelAnimationFrame(raf); raf=null; } }
+    window.addEventListener('resize', setSize, {passive:true});
+    document.addEventListener('visibilitychange', ()=>{ if(document.hidden) stop(); else start(); });
     start();
   }
-
-  // Капча
-  const capQ = document.getElementById('capQ');
-  const capA = document.getElementById('capA');
-  const capR = document.getElementById('capR');
-  let capSum = 0;
-
-  function genCap(){
-    const a = Math.floor(2 + Math.random()*8);
-    const b = Math.floor(2 + Math.random()*8);
-    capSum = a + b;
-    capQ.textContent = `${a} + ${b} = ?`;
-    capA.value = '';
-  }
-  capR.addEventListener('click', genCap);
-  genCap();
-
-  // Локальная "отправка"
-  const form = document.getElementById('appForm');
-  const res = document.getElementById('result');
-  const resetBtn = document.getElementById('resetBtn');
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const nick = document.getElementById('nick').value.trim();
-    const title = document.getElementById('title').value.trim();
-    const vt = document.getElementById('vt').value.trim();
-    const link = document.getElementById('link').value.trim();
-
-    if(!nick || !title || !vt || !link){ alert('Заполните все поля.'); return; }
-    if(!/^https?:\/\//i.test(vt) || vt.indexOf('virustotal.com')===-1){ alert('Укажите корректную ссылку на VirusTotal.'); return; }
-    if(!/^https?:\/\//i.test(link)){ alert('Укажите корректную ссылку на скачивание.'); return; }
-    if(parseInt(capA.value,10) !== capSum){ alert('Неверная капча. Попробуйте ещё раз.'); genCap(); capA.focus(); return; }
-
-    const app = { id: 'app_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
-                  nick, title, virustotal: vt, link, status: 'pending', ts: Date.now() };
-
-    try{
-      const db = JSON.parse(localStorage.getItem('fluxeApplications')) || [];
-      db.unshift(app);
-      localStorage.setItem('fluxeApplications', JSON.stringify(db));
-    }catch(e){
-      alert('Не удалось сохранить заявку. Проверьте настройки браузера.');
-      return;
-    }
-
-    res.style.display = 'block';
-    res.textContent = 'Заявка отправлена!'; // без ID и без текста про LocalStorage
-    form.reset();
-    genCap();
-  });
-
-  resetBtn.addEventListener('click', genCap);
 });
 </script>
 </body>
